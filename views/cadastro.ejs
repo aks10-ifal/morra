@@ -1,0 +1,179 @@
+<!-- Dados Pessoais -->
+<!-- cadastro.ejs -->
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Usuário</title>
+    <!-- Adicionar link para o Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Estilo para campos obrigatórios vazios após o foco */
+        .form-control:invalid:focus {
+            border-color: red;
+        }
+        /* Estilo para campos de seleção obrigatórios vazios após o foco */
+        select:invalid:focus {
+            border-color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastro de Usuário</h1>
+        <% if (mensagemErro) { %>
+            <p style="color: red;"><%= mensagemErro %></p>
+        <% } %>
+        <form action="/usuarios" method="POST">
+<div class="row">
+    <div class="col-md-6">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" class="form-control" required value="<%= dadosFormulario.nome || '' %>">
+        <span class="mensagem-campo-obrigatorio" id="mensagemNome"><%= mensagemErro && mensagemErro.field === 'nome' ? mensagemErro.message : '' %></span>
+    </div>
+    <div class="col-md-6">
+        <label for="cpf">CPF:</label>
+        <input type="number" id="cpf" name="cpf" class="form-control" required value="<%= dadosFormulario.cpf || '' %>">
+        <span class="mensagem-campo-obrigatorio" id="mensagemCpf"><%= mensagemErro && mensagemErro.field === 'cpf' ? mensagemErro.message : '' %></span>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="col-md-6">
+        <label for="dataNascimento">Data de Nascimento:</label>
+        <input type="date" id="dataNascimento" name="dataNascimento" class="form-control" required value="<%= dadosFormulario.dataNascimento || '' %>">
+        <span class="mensagem-campo-obrigatorio" id="mensagemDataNascimento"><%= mensagemErro && mensagemErro.field === 'dataNascimento' ? mensagemErro.message : '' %></span>
+    </div>
+    <div class="col-md-6">
+        <label>Sexo:</label><br>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" id="masculino" name="sexo" value="Masculino" required <%= dadosFormulario.sexo === 'Masculino' ? 'checked' : '' %>>
+            <label class="form-check-label" for="masculino">Masculino</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" id="feminino" name="sexo" value="Feminino" required <%= dadosFormulario.sexo === 'Feminino' ? 'checked' : '' %>>
+            <label class="form-check-label" for="feminino">Feminino</label>
+        </div>
+        <span class="mensagem-campo-obrigatorio" id="mensagemSexo"><%= mensagemErro && mensagemErro.field === 'sexo' ? mensagemErro.message : '' %></span>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="col-md-6">
+        <label for="estadoCivil">Estado Civil:</label>
+        <select id="estadoCivil" name="estadoCivil" class="form-control" required>
+            <option value="">Selecione o estado civil</option>
+            <option value="Solteiro(a)" <%= dadosFormulario.estadoCivil === 'Solteiro(a)' ? 'selected' : '' %>>Solteiro(a)</option>
+            <option value="Casado(a)" <%= dadosFormulario.estadoCivil === 'Casado(a)' ? 'selected' : '' %>>Casado(a)</option>
+            <option value="Separado(a)" <%= dadosFormulario.estadoCivil === 'Separado(a)' ? 'selected' : '' %>>Separado(a)</option>
+            <option value="Divorciado(a)" <%= dadosFormulario.estadoCivil === 'Divorciado(a)' ? 'selected' : '' %>>Divorciado(a)</option>
+            <option value="Viúvo(a)" <%= dadosFormulario.estadoCivil === 'Viúvo(a)' ? 'selected' : '' %>>Viúvo(a)</option>
+        </select>
+        <span class="mensagem-campo-obrigatorio" id="mensagemEstadoCivil"><%= mensagemErro && mensagemErro.field === 'estadoCivil' ? mensagemErro.message : '' %></span>
+    </div>
+    <div class="form-group">
+        <label for="rendaMensal">Renda Mensal:</label>
+        <input type="number" id="rendaMensal" name="rendaMensal" class="form-control" required placeholder="0,00" value="<%= dadosFormulario.rendaMensal || '' %>">
+    </div>
+</div>
+<br>
+<!-- Endereço -->
+<div class="row">
+    <div class="col-md-12">
+        <h1>Endereço</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <label for="logradouro">Logradouro:</label>
+        <input type="text" id="logradouro" name="logradouro" class="form-control" required value="<%= dadosFormulario.logradouro || '' %>">
+        <span class="mensagem-campo-obrigatorio" id="mensagemLogradouro"><%= mensagemErro && mensagemErro.field === 'logradouro' ? mensagemErro.message : '' %></span>
+    </div>
+    <div class="col-md-6">
+        <label for="numero">Número:</label>
+        <input type="number" id="numero" name="numero" class="form-control" required value="<%= dadosFormulario.numero || '' %>">
+        <span class="mensagem-campo-obrigatorio" id="mensagemNumero"><%= mensagemErro && mensagemErro.field === 'numero' ? mensagemErro.message : '' %></span>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="col-md-6">
+        <label for="complemento">Complemento:</label>
+        <input type="text" id="complemento" name="complemento" class="form-control" value="<%= dadosFormulario.complemento || '' %>">
+        <span class="mensagem-campo-obrigatorio" id="mensagemComplemento"><%= mensagemErro && mensagemErro.field === 'complemento' ? mensagemErro.message : '' %></span>
+    </div>
+    <div class="col-md-6">
+        <label for="cidade">Cidade:</label>
+        <input type="text" id="cidade" name="cidade" class="form-control" required value="<%= dadosFormulario.cidade || '' %>">
+        <span class="mensagem-campo-obrigatorio" id="mensagemCidade"><%= mensagemErro && mensagemErro.field === 'cidade' ? mensagemErro.message : '' %></span>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="col-md-6">
+        <label for="estado">Estado:</label>
+        <select id="estado" name="estado" class="form-control" required>
+            <option value="">Selecione o estado</option>
+            <option value="AC" <%= dadosFormulario.estado === 'AC' ? 'selected' : '' %>>Acre</option>
+            <option value="AL" <%= dadosFormulario.estado === 'AL' ? 'selected' : '' %>>Alagoas</option>
+            <!-- Adicione as outras opções aqui -->
+        </select>
+        <span class="mensagem-campo-obrigatorio" id="mensagemEstado"><%= mensagemErro && mensagemErro.field === 'estado' ? mensagemErro.message : '' %></span>
+    </div>
+</div>
+<br>
+<!-- Botão de Submit -->
+<button type="submit" class="btn btn-primary">Cadastrar</button>
+</form>
+</div>
+
+<!-- Adicionar scripts do Bootstrap e do jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+
+
+<script>
+// Adiciona evento blur para mostrar a mensagem de campo obrigatório se o campo estiver vazio
+document.querySelectorAll('input[required], select[required]').forEach(input => {
+    input.addEventListener('blur', function() {
+        const mensagemId = `mensagem${this.id.charAt(0).toUpperCase() + this.id.slice(1)}`;
+        if (this.value.trim() === '') {
+            document.getElementById(mensagemId).innerText = 'Campo obrigatório';
+            document.getElementById(mensagemId).style.color = 'red'; // Define a cor do texto como vermelha
+            this.style.borderColor = 'red'; // Define a cor da borda do campo como vermelha
+        } else {
+            document.getElementById(mensagemId).innerText = '';
+            document.getElementById(mensagemId).style.color = ''; // Remove qualquer cor de texto definida anteriormente
+            this.style.borderColor = ''; // Remove qualquer cor de borda definida anteriormente
+        }
+    });
+});
+</script>
+<!-- Adicione este script à sua página de cadastro -->
+<script>
+// Adiciona formatação para a renda mensal (apenas números e até duas casas decimais)
+document.getElementById('rendaMensal').addEventListener('input', function(event) {
+// Obtém o valor inserido pelo usuário
+let value = event.target.value;
+
+// Remove caracteres não numéricos, exceto ponto decimal
+value = value.replace(/[^\d.]/g, '');
+
+// Formata para manter apenas duas casas decimais
+value = parseFloat(value).toFixed(2);
+
+// Atualiza o valor do campo
+event.target.value = value;
+});
+</script>
+
+
+
+
+</body>
+</html>
