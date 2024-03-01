@@ -34,11 +34,18 @@
                         <td><%= user.sexo %></td>
                         <td>
                             <form action="/usuarios/<%= user.id %>?_method=DELETE" method="POST">
-                                <button type="submit" class="btn btn-danger mr-2">Excluir</button>
+                                <div class="row">
+                                    <div class="col">
+                                        <button class="btn btn-success">Atualizar</button>
+                            </div>
                             </form>
                             <!-- Botão de atualizar -->
-                            <button class="btn btn-success">Atualizar</button>
+                            <div class="col">
+                                <button type="submit" class="btn btn-danger mr-2">Excluir</button>
+                           
                         </td>
+                    </div>
+                    </div>
                     </tr>
                 <% }); %>
             </tbody>
