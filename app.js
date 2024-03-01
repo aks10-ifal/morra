@@ -1,12 +1,15 @@
 const express = require('express');
 const app = express();
-const port = 3009; // Porta que a aplicação irá escutar
+const port = 3000; // Porta que a aplicação irá escutar
 
 const path = require('path');
 
 const methodOverride = require('method-override');
 app.use(methodOverride('_method'));
 
+app.get('/', (req, res) => {
+    res.redirect('/usuarios'); // ou res.redirect('/users');
+});
 
 // Middleware para permitir o uso do req.body
 app.use(express.json());
@@ -19,10 +22,10 @@ app.set('view engine', 'ejs');
 // Simulação de uma lista de usuários (pode ser substituída por um banco de dados)
 let users = [
     { id: 1, nome: 'Usuário 1', email: 'usuario1@gmail.com', dataNascimento: '1990-01-01', sexo: 'Masculino' },
-    { id: 2, nome: 'Usuário 2', email: 'usuario2@gmail.com', dataNascimento: '1995-05-05', sexo: 'Feminino' }
+    { id: 2, nome: 'Usuário 2', email: 'usuario2@gmail.com', dataNascimento: '1995-05-05', sexo: 'Feminino' },
+    
 ];
 
-// Função para validar o CPF
 function validarCPF(cpf) {
     // Remove todos os caracteres que não são dígitos
     cpf = cpf.replace(/\D/g, '');
@@ -33,34 +36,27 @@ function validarCPF(cpf) {
     // Verifica se todos os dígitos são iguais
     if (/^(\d)\1{10}$/.test(cpf)) return false;
 
-    // Calcula os dígitos verificadores
+    // Calcula o primeiro dígito verificador
     let soma = 0;
-    let resto;
-
-    for (let i = 1; i <= 9; i++) {
-        soma += parseInt(cpf.charAt(i - 1)) * (11 - i);
+    for (let i = 0; i < 9; i++) {
+        soma += parseInt(cpf.charAt(i)) * (10 - i);
     }
-
-    resto = (soma * 10) % 11;
-
+    let resto = (soma * 10) % 11;
     if (resto === 10 || resto === 11) resto = 0;
-
     if (resto !== parseInt(cpf.charAt(9))) return false;
 
+    // Calcula o segundo dígito verificador
     soma = 0;
     for (let i = 0; i < 10; i++) {
         soma += parseInt(cpf.charAt(i)) * (11 - i);
     }
-
     resto = (soma * 10) % 11;
-
     if (resto === 10 || resto === 11) resto = 0;
-
     if (resto !== parseInt(cpf.charAt(10))) return false;
 
+    // CPF válido
     return true;
 }
-
 
 // Função para validar a data de nascimento
 function validarDataNascimento(dataNascimento) {
@@ -84,7 +80,6 @@ app.delete('/usuarios/:id', (req, res) => {
     res.redirect('/usuarios'); // Redireciona de volta para a página de usuários após a exclusão
 });
 
-
 // Função para validar a renda mensal (apenas valores numéricos e com até duas casas decimais)
 function validarRendaMensal(rendaMensal) {
     // Verifica se é um número válido com até duas casas decimais
@@ -102,11 +97,6 @@ function validarComplemento(complemento) {
     return true;
 }
 
-
-
-
-
-
 // Rota para renderizar a página de cadastro de usuário
 app.get('/cadastro', (req, res) => {
     res.render('cadastro', { mensagemErro: '', dadosFormulario: {} }); // Inicializa a variável dadosFormulario
@@ -116,58 +106,61 @@ app.get('/cadastro', (req, res) => {
 app.post('/usuarios', (req, res) => {
     const { nome, cpf, dataNascimento, sexo, estadoCivil, rendaMensal, logradouro, estado, cidade, numero, complemento } = req.body;
 
-    // Validação do nome
-    if (nome.length < 3) {
-        return res.render('cadastro', { mensagemErro: 'Nome deve conter no mínimo 3 caracteres.', dadosFormulario: req.body });
+    if (!nome || nome.trim() === '') {
+        return res.render('cadastro', { mensagemErro: 'Nome é um campo obrigatório.', dadosFormulario: req.body });
+    } else if (nome.trim().length < 3) {
+        return res.render('cadastro', { mensagemErro: 'O nome deve conter mais de 3 caracteres.', dadosFormulario: req.body });
     }
 
     // Validação do CPF
-    if (!validarCPF(cpf)) {
+    if (!cpf || cpf.trim() === '' || !validarCPF(cpf)) {
         return res.render('cadastro', { mensagemErro: 'CPF inválido. O CPF deve estar no formato XXX.XXX.XXX-XX.', dadosFormulario: req.body });
     }
 
     // Validação da data de nascimento
-    if (!validarDataNascimento(dataNascimento)) {
+    if (!dataNascimento || dataNascimento.trim() === '' || !validarDataNascimento(dataNascimento)) {
         return res.render('cadastro', { mensagemErro: 'Data de nascimento inválida.', dadosFormulario: req.body });
     }
 
     // Validação do estado civil
     const estadosCivisValidos = ['Solteiro(a)', 'Casado(a)', 'Separado(a)', 'Divorciado(a)', 'Viúvo(a)'];
-    if (!estadosCivisValidos.includes(estadoCivil)) {
+    if (!estadoCivil || estadoCivil.trim() === '' || !estadosCivisValidos.includes(estadoCivil)) {
         return res.render('cadastro', { mensagemErro: 'Estado civil inválido.', dadosFormulario: req.body });
     }
 
     // Validação da renda mensal
-    if (!validarRendaMensal(rendaMensal)) {
+    if (!rendaMensal || rendaMensal.trim() === '' || !validarRendaMensal(rendaMensal)) {
         return res.render('cadastro', { mensagemErro: 'Renda mensal inválida. Insira apenas valores numéricos com até duas casas decimais.', dadosFormulario: req.body });
     }
 
     // Validação do logradouro
-    if (logradouro.length < 3) {
-        return res.render('cadastro', { mensagemErro: 'Logradouro deve conter no mínimo 3 caracteres.', dadosFormulario: req.body });
+    if (!logradouro || logradouro.trim() === '' || logradouro.length < 3) {
+        return res.render('cadastro', { mensagemErro: 'Logradouro é um campo obrigatório e deve conter no mínimo 3 caracteres.', dadosFormulario: req.body });
     }
 
     // Validação do número
-    if (!validarNumero(numero)) {
-        return res.render('cadastro', { mensagemErro: 'Número inválido. Insira apenas números inteiros.', dadosFormulario: req.body });
+    if (!numero || numero.trim() === '' || !validarNumero(numero)) {
+        return res.render('cadastro', { mensagemErro: 'Número é um campo obrigatório e deve conter apenas números inteiros.', dadosFormulario: req.body });
     }
 
     // Validação da cidade
-    if (cidade.length < 3) {
-        return res.render('cadastro', { mensagemErro: 'Cidade deve conter no mínimo 3 caracteres.', dadosFormulario: req.body });
+    if (!cidade || cidade.trim() === '' || cidade.length < 3) {
+        return res.render('cadastro', { mensagemErro: 'Cidade é um campo obrigatório e deve conter no mínimo 3 caracteres.', dadosFormulario: req.body });
+    }
+
+    // Validação do estado
+    if (!estado || estado.trim() === '') {
+        return res.render('cadastro', { mensagemErro: 'Estado é um campo obrigatório.', dadosFormulario: req.body });
     }
 
     // Adicionar usuário à lista de usuários
     const newUser = { id: users.length + 1, nome, email: `${nome.toLowerCase().replace(/\s+/g, '')}@gmail.com`, dataNascimento, sexo, estadoCivil, rendaMensal, logradouro, estado, cidade, numero, complemento };
     users.push(newUser);
-    res.redirect('/usuarios');
+    res.redirect('/completed');
 });
-
 app.get('/completed', (req, res) => {
     res.render('completed');
 });
-
-
 
 app.delete('/usuarios/:id', (req, res) => {
     const userId = parseInt(req.params.id);
