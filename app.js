@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 3000; // Porta que a aplicação irá escutar
+const port = 3000 // Porta que a aplicação irá escutar
 
 const path = require('path');
 
@@ -135,42 +135,39 @@ app.post('/usuarios', (req, res) => {
 
     // Validação do logradouro
     if (!logradouro || logradouro.trim() === '' || logradouro.length < 3) {
-        return res.render('cadastro', { mensagemErro: 'Logradouro é um campo obrigatório e deve conter no mínimo 3 caracteres.', dadosFormulario: req.body });
+        return res.render('cadastro', { mensagemErro: 'Logradouro inválido. O logradouro deve conter mais de 3 caracteres.', dadosFormulario: req.body });
     }
 
     // Validação do número
     if (!numero || numero.trim() === '' || !validarNumero(numero)) {
-        return res.render('cadastro', { mensagemErro: 'Número é um campo obrigatório e deve conter apenas números inteiros.', dadosFormulario: req.body });
+        return res.render('cadastro', { mensagemErro: 'Número inválido. Insira apenas números inteiros.', dadosFormulario: req.body });
     }
 
-    // Validação da cidade
-    if (!cidade || cidade.trim() === '' || cidade.length < 3) {
-        return res.render('cadastro', { mensagemErro: 'Cidade é um campo obrigatório e deve conter no mínimo 3 caracteres.', dadosFormulario: req.body });
+    // Validação do complemento
+    if (!validarComplemento(complemento)) {
+        return res.render('cadastro', { mensagemErro: 'Complemento inválido.', dadosFormulario: req.body });
     }
 
-    // Validação do estado
-    if (!estado || estado.trim() === '') {
-        return res.render('cadastro', { mensagemErro: 'Estado é um campo obrigatório.', dadosFormulario: req.body });
-    }
-
-    // Adicionar usuário à lista de usuários
-    const newUser = { id: users.length + 1, nome, email: `${nome.toLowerCase().replace(/\s+/g, '')}@gmail.com`, dataNascimento, sexo, estadoCivil, rendaMensal, logradouro, estado, cidade, numero, complemento };
+    // Se todas as validações passarem, adiciona o usuário à lista de usuários
+    const newUser = {
+        id: users.length + 1,
+        nome,
+        email: `${nome.toLowerCase().replace(/\s+/g, '')}@gmail.com`,
+        dataNascimento,
+        sexo,
+        estadoCivil,
+        rendaMensal,
+        logradouro,
+        estado,
+        cidade,
+        numero,
+        complemento
+    };
     users.push(newUser);
-    res.redirect('/completed');
-});
-app.get('/completed', (req, res) => {
-    res.render('completed');
-});
 
-app.delete('/usuarios/:id', (req, res) => {
-    const userId = parseInt(req.params.id);
-    users = users.filter(user => user.id !== userId);
-    users.forEach((user, index) => {
-        user.id = index + 1;
-    });
-    res.redirect('/usuarios');
+    res.redirect('/usuarios'); // Redireciona para a página de listagem de usuários após o cadastro
 });
 
 app.listen(port, () => {
-    console.log(`Servidor rodando em http://localhost:${port}`);
+    console.log(`Servidor rodando na porta ${port}`);
 });
