@@ -1,3 +1,5 @@
+<!-- XD -->
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -32,18 +34,22 @@
         <% if (mensagemErro) { %>
             <p style="color: red;"><%= mensagemErro %></p>
         <% } %>
+    
         <form id="formulario" action="/usuarios" method="POST">
             <div class="titulo-section"> <h1>Dados Pessoais</h1></div>
             <div class="row">
                 <div class="col-md-6">
                     <label for="nome">Nome:</label>
                     <input type="text" id="nome" name="nome" class="form-control"  placeholder="Digite seu Nome" value="<%= dadosFormulario.nome || '' %>">
+                
                     <span class="mensagem-campo-obrigatorio" id="mensagemNome"></span>
                 </div>
                 <div class="col-md-6">
                     <label for="cpf">CPF:</label>
-                    <input type="text" id="cpf" name="cpf" class="form-control"  placeholder="Formato: XXX.XXX.XXX-XX">
+                    <input type="text" id="cpf" name="cpf" class="form-control"  placeholder="Formato: XXX.XXX.XXX-XX" value="<%= dadosFormulario.cpf || '' %>">
                     <span class="mensagem-campo-obrigatorio" id="mensagemCpf"></span>
+                    <!-- Adicione a mensagem de CPF inválido aqui -->
+                    <span class="mensagem-cpf-invalido" id="mensagemCpfInvalido"></span>
                 </div>
             </div>
             <br>
@@ -96,12 +102,12 @@
             <div class="row">
                 <div class="col-md-6">
                     <label for="logradouro">Logradouro:</label>
-                    <input type="text" id="logradouro" name="logradouro" class="form-control"  placeholder="Logradouro" value="<%= dadosFormulario.logradouro || '' %>">
+                    <input type="text" id="logradouro" name="logradouro" class="form-control"  placeholder="Av. Paulista" value="<%= dadosFormulario.logradouro || '' %>">
                     <span class="mensagem-campo-obrigatorio" id="mensagemLogradouro"></span>
                 </div>
                 <div class="col-md-6">
                     <label for="numero">Número:</label>
-                    <input type="number" id="numero" name="numero" class="form-control"  placeholder="Numero" value="<%= dadosFormulario.numero || '' %>">
+                    <input type="number" id="numero" name="numero" class="form-control"  placeholder="N°" value="<%= dadosFormulario.numero || '' %>">
                     <span class="mensagem-campo-obrigatorio" id="mensagemNumero"></span>
                 </div>
             </div>
@@ -109,12 +115,12 @@
             <div class="row">
                 <div class="col-md-6">
                     <label for="complemento">Complemento:</label>
-                    <input type="text" id="complemento" name="complemento" class="form-control"   value="<%= dadosFormulario.complemento || '' %>">
+                    <input type="text" id="complemento" name="complemento" class="form-control"  placeholder="Casa,Apto,loja" value="<%= dadosFormulario.complemento || '' %>">
                     <span class="mensagem-campo-obrigatorio" id="mensagemComplemento"></span>
                 </div>
                 <div class="col-md-6">
                     <label for="cidade">Cidade:</label>
-                    <input type="text" id="cidade" name="cidade" class="form-control"  placeholder="Cidade" value="<%= dadosFormulario.cidade || '' %>">
+                    <input type="text" id="cidade" name="cidade" class="form-control"  placeholder="Sao Paulo" value="<%= dadosFormulario.cidade || '' %>">
                     <span class="mensagem-campo-obrigatorio" id="mensagemCidade"></span>
                 </div>
             </div>
@@ -152,7 +158,7 @@
                         <option value="SE" <%= dadosFormulario.estado === 'SE' ? 'selected' : '' %>>Sergipe</option>
                         <option value="TO" <%= dadosFormulario.estado === 'TO' ? 'selected' : '' %>>Tocantins</option>
                     </select>
-                    <span class="mensagem-campo-obrigatorio" id="mensagemEstado"></span>
+                    
                 </div>
             </div>
             <br>
@@ -167,38 +173,41 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 
     <script>
-        // Adiciona evento blur para mostrar a mensagem de campo obrigatório se o campo estiver vazio
-        document.querySelectorAll('input, select').forEach(input => {
-            input.addEventListener('blur', function() {
-                const mensagemId = `mensagem${this.id.charAt(0).toUpperCase() + this.id.slice(1)}`;
-                if (this.value.trim() === '') {
-                    document.getElementById(mensagemId).innerText = 'Campo obrigatório';
-                    document.getElementById(mensagemId).style.color = 'red'; // Define a cor do texto como vermelha
-                    this.style.borderColor = 'red'; // Define a cor da borda do campo como vermelha
-                } else {
-                    document.getElementById(mensagemId).innerText = '';
-                    document.getElementById(mensagemId).style.color = ''; // Remove qualquer cor de texto definida anteriormente
-                    this.style.borderColor = ''; // Remove qualquer cor de borda definida anteriormente
-                }
-            });
-        });
-
-        // Adicione este código para impedir que o formulário seja enviado se houver campos vazios
-        document.getElementById('formulario').addEventListener('submit', function(event) {
-            let camposVazios = false;
+       
+            // Adiciona evento blur para mostrar a mensagem de campo obrigatório se o campo estiver vazio
             document.querySelectorAll('input, select').forEach(input => {
-                if (input.value.trim() === '') {
-                    camposVazios = true;
-                    const mensagemId = `mensagem${input.id.charAt(0).toUpperCase() + input.id.slice(1)}`;
-                    document.getElementById(mensagemId).innerText = 'Campo obrigatório';
-                    document.getElementById(mensagemId).style.color = 'red'; // Define a cor do texto como vermelha
-                    input.style.borderColor = 'red'; // Define a cor da borda do campo como vermelha
+                input.addEventListener('blur', function() {
+                    const mensagemId = `mensagem${this.id.charAt(0).toUpperCase() + this.id.slice(1)}`;
+                    if (this.value.trim() === '') {
+                        document.getElementById(mensagemId).innerText = 'Campo obrigatório';
+                        document.getElementById(mensagemId).style.color = 'red'; // Define a cor do texto como vermelha
+                        this.style.borderColor = 'red'; // Define a cor da borda do campo como vermelha
+                    } else {
+                        document.getElementById(mensagemId).innerText = '';
+                        document.getElementById(mensagemId).style.color = ''; // Remove qualquer cor de texto definida anteriormente
+                        this.style.borderColor = ''; // Remove qualquer cor de borda definida anteriormente
+                    }
+                });
+            });
+        
+            // Adicione este código para impedir que o formulário seja enviado se houver campos vazios
+            document.getElementById('formulario').addEventListener('submit', function(event) {
+                let camposVazios = false;
+                document.querySelectorAll('input, select').forEach(input => {
+                    if (input.value.trim() === '') {
+                        camposVazios = true;
+                        const mensagemId = `mensagem${input.id.charAt(0).toUpperCase() + input.id.slice(1)}`;
+                        document.getElementById(mensagemId).innerText = 'Campo obrigatório';
+                        document.getElementById(mensagemId).style.color = 'red'; // Define a cor do texto como vermelha
+                        input.style.borderColor = 'red'; // Define a cor da borda do campo como vermelha
+                    }
+                });
+                if (camposVazios) {
+                    event.preventDefault(); // Impede o envio do formulário se houver campos vazios
                 }
             });
-            if (camposVazios) {
-                event.preventDefault(); // Impede o envio do formulário se houver campos vazios
-            }
-        });
+      
+        
 
         // Adiciona formatação para a renda mensal (apenas números e até duas casas decimais)
         document.getElementById('rendaMensal').addEventListener('input', function(event) {
@@ -224,18 +233,59 @@
             event.target.setCustomValidity('');
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const cpfInput = document.getElementById('cpf');
-
-            cpfInput.addEventListener('input', function() {
-                let cpf = cpfInput.value.replace(/\D/g, ''); // Remove todos os caracteres que não são dígitos
-
-                // Formata o CPF
-                cpf = cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-
-                cpfInput.value = cpf; // Atualiza o valor do campo de CPF com a versão formatada
+    
+    document.addEventListener("DOMContentLoaded", function() {
+            // Aplicar a formatação do CPF quando o DOM estiver carregado
+            const inputCPF = document.getElementById("cpf");
+            inputCPF.addEventListener("input", function(event) {
+                // Obtém o valor do campo e remove qualquer caractere que não seja número
+                let cpf = event.target.value.replace(/\D/g, '');
+                // Adiciona formatação de CPF se o valor não estiver vazio
+                if (cpf) {
+                    cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2'); // Adiciona o primeiro ponto
+                    cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2'); // Adiciona o segundo ponto
+                    cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2'); // Adiciona o traço
+                    event.target.value = cpf;
+                }
             });
         });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Adicionar validação de CPF quando o DOM estiver carregado
+            const form = document.getElementById("formulario");
+            form.addEventListener("submit", function(event) {
+                const inputCPF = document.getElementById("cpf");
+                const cpf = inputCPF.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+                if (!validarCPF(cpf)) {
+                    event.preventDefault(); // Impede o envio do formulário se o CPF for inválido
+                    document.getElementById("mensagemCpfInvalido").innerText = "CPF inválido";
+                    document.getElementById("mensagemCpfInvalido").style.color = "red";
+                }
+            });
+        });
+
+        // Função para validar CPF
+        function validarCPF(cpf) {
+            cpf = cpf.toString().replace(/[^0-9]/g, '');
+            if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+            let soma = 0;
+            let resto;
+            for (let i = 1; i <= 9; i++)
+                soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+            resto = (soma * 10) % 11;
+            if (resto === 10 || resto === 11) resto = 0;
+            if (resto !== parseInt(cpf.substring(9, 10))) return false;
+            soma = 0;
+            for (let i = 1; i <= 10; i++)
+                soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+            resto = (soma * 10) % 11;
+            if (resto === 10 || resto === 11) resto = 0;
+            if (resto !== parseInt(cpf.substring(10, 11))) return false;
+            return true;
+        }
+
     </script>
+
 </body>
 </html>
+
